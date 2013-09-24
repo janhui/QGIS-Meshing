@@ -58,6 +58,7 @@ from Scientific.IO import NetCDF #Most likelly obsolete this file should only de
 from scripts.PreMeshingFunctions import PreMesh
 from scripts.MeshOperations import MeshOp
 from scripts.ErrorMessages import *
+from scripts.export_geo import *
 from scripts.define_id import *
 from scripts.flat_mesh_to_spherical import flat_mesh_spherical
 
