@@ -374,24 +374,24 @@ class MeshSurface(PreMesh, MeshOp):
        # pdb.set_trace()
 
       ### BSplines doesnt work currently hence on LY and LN
-        lineType = "LN"
+        lineType = "LN "
 
         if self.dlg.ui.compoundCheckBox.isChecked():
           if self.dlg.ui.lineRadioButton.isChecked():
-           lineType = "LY"
+           lineType = "LY "
 
         ## mesh the shape file
         mesh = ""
         if self.dlg.ui.commandEdit.isChecked():
-          mesh = "--mesh"
+          mesh = "--mesh "
 
 
         ## select the shape file or the supplied geo file
         domainShapefile = str(self.dlg.ui.domainShapefileLayerDropDown.itemData(self.domainShapefileLayerIndex).toString())
         if self.dlg.ui.chooseGeoFileRadioButton.isChecked():
-          geoFile = " -g "+self.dlg.ui.chooseGeoFileLineEdit.text()
+          geoFile = " -g "+self.dlg.ui.chooseGeoFileLineEdit.text()+" "
         else:
-          geofile = " -g "+domainShapefile[:-4]+".geo"
+          geofile = " -g "+domainShapefile[:-4]+".geo "
 
           ##ADDing the netcdf to it
         netCDFFileName = ""
@@ -404,13 +404,15 @@ class MeshSurface(PreMesh, MeshOp):
         idFile = ""
         defID = ""
 
-        if self.grpDefID.isChecked():
+        if self.dlg.ui.grpDefID.isChecked():
+          idText = self.dlg.ui.IdDropdown.currentText()
+          idIndex = self.dlg.ui.IdDropdown.findText(idText)
           idFile = " --id "+str(self.dlg.ui.IdDropdown.itemData(idIndex).toString())
           defID = " --defid "+str(self.dlg.ui.Default_Id.text())
 
 
 
-        os.system("python plugins/mesh_surface/mesh_surface -l "+lineType++geofile+idFile+" "+mesh+netCDFFileName+" "+domainShapefile)
+        os.system("python plugins/mesh_surface/mesh_surface -l "+lineType+geofile+idFile+" "+defID+" "+mesh+netCDFFileName+" "+domainShapefile)
 
 
 
