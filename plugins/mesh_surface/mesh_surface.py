@@ -350,7 +350,6 @@ class MeshSurface(PreMesh, MeshOp):
       #  QtGui.QMessageBox.critical(None,"Error: No Active Layer","There are no active layers. Please load a layer.")
       #  raise AssertionError ("Error: No Active Layer.")
 
-      os.system("echo in run")
 
       self.setDropDownOptions()
       layers = self.iface.mapCanvas().layers()
@@ -381,32 +380,37 @@ class MeshSurface(PreMesh, MeshOp):
           if self.dlg.ui.lineRadioButton.isChecked():
            lineType = "LY"
 
-        os.system("echo in run 1")
-        
+        ## mesh the shape file
         mesh = ""
         if self.dlg.ui.commandEdit.isChecked():
           mesh = "--mesh"
 
-        domainShapefile = str(self.dlg.ui.domainShapefileLayerDropDown.itemData(self.domainShapefileLayerIndex).toString())
-        os.system("echo in run 2")
-        if self.dlg.ui.chooseGeoFileRadioButton.isChecked():
-          geoFile = "-g /home/jk3111/"+self.dlg.ui.chooseGeoFileLineEdit.text()
-        else:
-          geofile = "-g "+domainShapefile[:-4]+".geo"
 
-        os.system("echo in run 3")
-#######################add netcdf and shape files and id files!!
+        ## select the shape file or the supplied geo file
+        domainShapefile = str(self.dlg.ui.domainShapefileLayerDropDown.itemData(self.domainShapefileLayerIndex).toString())
+        if self.dlg.ui.chooseGeoFileRadioButton.isChecked():
+          geoFile = " -g "+self.dlg.ui.chooseGeoFileLineEdit.text()
+        else:
+          geofile = " -g "+domainShapefile[:-4]+".geo"
+
+          ##ADDing the netcdf to it
         netCDFFileName = ""
         if self.dlg.ui.singleNetCDFChooseFilesRadioButton.isChecked():
-          filename = self.dlg.ui.singleNetCDFLayerDropDown.itemData(self.singleNetCDFLayerIndex).toString()
-          netCDFFileName = "-m "+filename
+          filename = str(self.dlg.ui.singleNetCDFLayerDropDown.itemData(self.singleNetCDFLayerIndex).toString())
+          netCDFFileName = " -m "+filename
+
+          ##Adding the IDs
+
+        idFile = ""
+        defID = ""
+
+        if self.grpDefID.isChecked():
+          idFile = " --id "+str(self.dlg.ui.IdDropdown.itemData(idIndex).toString())
+          defID = " --defid "+str(self.dlg.ui.Default_Id.text())
 
 
 
-        os.system("echo in run 4")
-
-
-        os.system("python plugins/mesh_surface/mesh_surface -l "+lineType+" "+geofile+" "+mesh+" "+domainShapefile)
+        os.system("python plugins/mesh_surface/mesh_surface -l "+lineType++geofile+idFile+" "+mesh+netCDFFileName+" "+domainShapefile)
 
 
 
