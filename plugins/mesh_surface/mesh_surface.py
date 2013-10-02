@@ -62,6 +62,8 @@ from scripts.export_geo import *
 from scripts.define_id import *
 from scripts.flat_mesh_to_spherical import flat_mesh_spherical
 
+import pdb
+
 
 # with args?
 class MeshSurface(PreMesh, MeshOp):
@@ -348,6 +350,8 @@ class MeshSurface(PreMesh, MeshOp):
       #  QtGui.QMessageBox.critical(None,"Error: No Active Layer","There are no active layers. Please load a layer.")
       #  raise AssertionError ("Error: No Active Layer.")
 
+      os.system("echo in run")
+
       self.setDropDownOptions()
       layers = self.iface.mapCanvas().layers()
       self.dlg.ui.IdDropdown.clear()
@@ -365,11 +369,50 @@ class MeshSurface(PreMesh, MeshOp):
         startTime = datetime.datetime.now()
         print "Operation Started: " + str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
         self._checkForErrors()
-        self.MeshSurface()
-			
+        #self.MeshSurface()
+
+       # pyqtRemoveInputHook()
+       # pdb.set_trace()
+
+      ### BSplines doesnt work currently hence on LY and LN
+        lineType = "LN"
+
+        if self.dlg.ui.compoundCheckBox.isChecked():
+          if self.dlg.ui.lineRadioButton.isChecked():
+           lineType = "LY"
+
+        os.system("echo in run 1")
+        
+        mesh = ""
+        if self.dlg.ui.commandEdit.isChecked():
+          mesh = "--mesh"
+
+        domainShapefile = str(self.dlg.ui.domainShapefileLayerDropDown.itemData(self.domainShapefileLayerIndex).toString())
+        os.system("echo in run 2")
+        if self.dlg.ui.chooseGeoFileRadioButton.isChecked():
+          geoFile = "-g /home/jk3111/"+self.dlg.ui.chooseGeoFileLineEdit.text()
+        else:
+          geofile = "-g "+domainShapefile[:-4]+".geo"
+
+        os.system("echo in run 3")
+#######################add netcdf and shape files and id files!!
+        netCDFFileName = ""
+        if self.dlg.ui.singleNetCDFChooseFilesRadioButton.isChecked():
+          filename = self.dlg.ui.singleNetCDFLayerDropDown.itemData(self.singleNetCDFLayerIndex).toString()
+          netCDFFileName = "-m "+filename
+
+
+
+        os.system("echo in run 4")
+
+
+        os.system("python plugins/mesh_surface/mesh_surface -l "+lineType+" "+geofile+" "+mesh+" "+domainShapefile)
+
+
+
         print "Operation Stopped: " + str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))
-	timePassed = datetime.datetime.now() - startTime
-	print "Time Elapsed: " + str(timePassed.seconds) + " seconds."
+        timePassed = datetime.datetime.now() - startTime
+        print "Time Elapsed: " + str(timePassed.seconds) + " seconds."
 
     except AssertionError as e:
       print e.message
